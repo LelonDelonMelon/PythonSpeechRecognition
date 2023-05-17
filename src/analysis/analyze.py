@@ -4,13 +4,10 @@ import numpy as np
 """
  Analyze the speech signal
     First, extract mel frequency
-
-
 """
 
-
 # Load the audio file
-audio_file = "../assets/s5.wav"
+audio_file = "assets/s5.wav"
 audio, sr = librosa.load(audio_file, sr=None)
 
 # Extract MFCCs

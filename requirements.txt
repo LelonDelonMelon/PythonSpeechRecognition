@@ -1,0 +1,5 @@
+librosa 
+numpy 
+ipynb
+scikit-learn
+tk

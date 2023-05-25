@@ -4,25 +4,44 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
-# Load the MFCCs matrix and target labels
-X = np.load("example_mfccs.npy")
-y = np.load("target_labels.npy")
+acc = 0 
 
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+def setAccuracy(accuracy):
+    global acc
+    acc = accuracy
 
-# Standardize the feature matrix
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
+def main():
+        # Load the MFCCs matrix and target labels
+    print("here")
+    X = np.load("example_mfccs.npy")
+    y = np.load("target_labels.npy")
 
-# Train a logistic regression model
-clf = LogisticRegression(random_state=42)
-clf.fit(X_train, y_train)
 
-# Evaluate the model on the testing set
-y_pred = clf.predict(X_test)
-acc = accuracy_score(y_test, y_pred)
-print(f"Accuracy: {acc}")
+    # Split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    # Standardize the feature matrix
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    # Train a logistic regression model
+    clf = LogisticRegression(random_state=42)
+    clf.fit(X_train, y_train)
+
+    # Evaluate the model on the testing set
+    y_pred = clf.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    setAccuracy(acc)
+    print(f"Accuracy: {acc}")
+
+
+
+def getConfig():
+    global acc
+    print(f"Acc : " , {acc})
+    if(acc != 0):
+        return acc
+def train():
+    main()   

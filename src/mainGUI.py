@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import filedialog as fd
+from analysis import analyzer
 
+accScore = 0
 
 root = Tk()  # create root window
 root.title("Basic GUI Layout with Grid")
@@ -42,26 +44,32 @@ errorLabel.grid(
 error_Frame.grid_rowconfigure(0, weight=1)
 error_Frame.grid_columnconfigure(0, weight=1)
 
+#analyze.sayHi()
 
 def handleIdentify():
+    train.train()
+    accScore = train.getConfig();
+
+    print("AccScore: " , accScore)
     try:
-        print("Owner of the file" + fileText + " is " + "Tom")
-        labelText = "Owner of the file: " + fileText + " is " + '"Tom"'
+        print("Owner of the file" + fileText + " is " + "Tom" + "with accuracy:", accScore)
+        labelText = "Owner of the file: " + fileText + " is " + '"Tom"' + "with the accuracy " + str(accScore)
         ownerLabel.config(text=labelText)
-    except:
-        print("Error occured")
-        errorLabel.config(text="Error occured")
+    except Exception as e:
+        print("Error occured", e.message)
+        errorLabel.config(text="Error occured" +" " + e.message)
 
 
 def handleSelect():
     fileSelector = fd.askopenfilename()
     #   print("File selector is", fileSelector)
     global fileText
+    global actualName
+    actualName = fileSelector
     fileText = getName(fileSelector)
 
     if mainLabel:
         mainLabel.config(text=fileText)
-
 
 def getName(dir):
     dir = dir[::-1]
@@ -74,14 +82,19 @@ def getName(dir):
             break
 
     return retVal[::-1]
-
-
+def handleAnalyze():
+    #sayHi()
+    if(actualName):
+        analyze.setDirectory(actualName)
+    
 Button(tool_bar, text="Select Sound", command=handleSelect).grid(
     row=1, column=0, padx=5, pady=5, sticky="w" + "e" + "n" + "s"
 )
-Button(tool_bar, text="Identify", command=handleIdentify).grid(
+Button(tool_bar, text="Analyze", command=handleAnalyze).grid(
     row=2, column=0, padx=5, pady=5, sticky="w" + "e" + "n" + "s"
 )
+Button(tool_bar,text="Identify", command=handleIdentify).grid(
+    row=3, column=0, padx=5, pady=5, sticky="w" + "e" + "n" + "s")
 # Button(tool_bar,  text="Rotate &amp; Flip",  command=handleRotate).grid(row=3,  column=0,  padx=5,  pady=5,  sticky='w'+'e'+'n'+'s')
 # Button(tool_bar,  text="Resize",  command=handleResize).grid(row=4,  column=0,  padx=5,  pady=5,  sticky='w'+'e'+'n'+'s')
 # Button(tool_bar,  text="Black &amp; White",  command=handleBW).grid(row=1,  column=1,  padx=5,  pady=5,  sticky='w'+'e'+'n'+'s')

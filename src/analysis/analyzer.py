@@ -38,7 +38,8 @@ def preprocess_audio(audio_path, sample_rate=16000, n_mfcc=13, frame_length=0.02
 
     # Transpose MFCCs to have the shape (num_frames, num_mfcc, 1)
     mfccs = mfccs.T
-
+    if len(mfccs) < MAX_LENGTH:
+        mfccs = np.pad(mfccs, ((0, MAX_LENGTH - len(mfccs)), (0, 0)), mode='constant')
     return mfccs
 
 # Prepare the training and validation data
@@ -87,8 +88,8 @@ def build_model(input_shape, num_classes):
 
 
 # Train the model
-def train_model(model, training_data, training_labels, validation_data, validation_labels, batch_size=32, epochs=50):
-    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=8, restore_best_weights=True)
+def train_model(model, training_data, training_labels, validation_data, validation_labels, batch_size=32, epochs=200):
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=50, restore_best_weights=True)
     model.fit(
         training_data,
         training_labels,
@@ -182,12 +183,26 @@ def test_model():
     print("Shape of inputs_test:", inputs_test.shape)
     print("Shape of targets_test:", targets_test.shape)
     evaluate_model_accuracy(model, inputs_test, targets_test)
-    class_labels = [str(user_id) for user_id in user_ids]  # Convert user_ids to string labels
+    class_labels = [str(user_id) for user_id in user_ids] 
     evaluate_model(model, inputs_test, targets_test, class_labels)
 
 
+# Predict user_id of a single audio file
+def predict_user_id(model,audio_path):
+    actual_user_id = audio_path.split('/')[-2] # I get the user_id from path, this can be improved.
+    mfccs = preprocess_audio(audio_path)
+    mfccs = np.expand_dims(mfccs, axis=0)
+    predictions = model.predict(mfccs)
+    predicted_user_id = user_ids[np.argmax(predictions)]
+    print("Predicted User ID:",predicted_user_id)
+    print("Actual User ID:",actual_user_id)
+    return predicted_user_id
+
 # Main function
 def main():
-    test_model()
+    train_and_save_model()
+    test_model() # Tests and gives the accuracy of whole model.
+    model = tf.keras.models.load_model("src/model/cnn.h5")
+    predict_user_id(model,"LibriSpeech/test-clean/40/40-222-0004.flac")
 
 main()

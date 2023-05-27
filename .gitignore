@@ -4,3 +4,4 @@ src/json
 src/json/
 src/json/train_data.json
 src/json/test_data.json
+model/
